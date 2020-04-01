@@ -6,15 +6,15 @@ MAINTAINER Deanen Perumal <deanenp@hotmail.com>
 ADD https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-amd64.tar.gz /tmp/
 RUN apt-get update \
   && echo "*** Installing S6 Overlay ***" \
-  && tar xzf /tmp/s6-overlay-amd64.tar.gz -C \
-  && rm -rf /tmp/* \
+  && tar xzf /tmp/s6-overlay-amd64.tar.gz -C / \
   && echo "*** Create abc user and then the config & data directories ***" \
   && groupmod -g 1000 users \
   && useradd -u 911 -U -d /config -s /bin/false abc \
   && usermod -G users abc \
   && mkdir -p   /config \
                 /data \
-  && apt-get clean
+  && apt-get clean \
+  && rm -rf /tmp/*
 
 COPY rootfs /
 

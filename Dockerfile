@@ -13,6 +13,7 @@ RUN apt-get update \
   && usermod -G users abc \
   && mkdir -p   /config \
                 /data \
+                /default \
   && apt-get clean \
   && rm -rf /tmp/*
 

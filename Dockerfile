@@ -17,6 +17,6 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /tmp/*
 
-COPY rootfs /
+COPY rootfs/ /
 
 ENTRYPOINT ["/init"]

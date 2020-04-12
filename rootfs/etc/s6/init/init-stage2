@@ -1,15 +1,15 @@
 #!/usr/bin/with-contenv bash
 
 # Directories
-SCRIPTS_DIR="/config/custom-cont-init.d"
+SCRIPTS_DIR="/etc/cont.init.d"
 SERVICES_DIR="/config/custom-services.d"
 
 # Remove all existing custom services before continuing to ensure
 # we aren't running anything the user may have removed
-if [ -n "$(/bin/ls -A /etc/services.d/custom-service-* 2>/dev/null)" ]; then
-  echo "[custom-init] removing existing custom services..."
-  rm -rf /etc/services.d/custom-service-*
-fi
+#if [ -n "$(/bin/ls -A /etc/services.d/custom-service-* 2>/dev/null)" ]; then
+#  echo "[custom-init] removing existing custom services..."
+#  rm -rf /etc/services.d/custom-service-*
+#fi
 
 # Make sure custom init directory exists and has files in it
 if ([ -e "${SCRIPTS_DIR}" ] && \

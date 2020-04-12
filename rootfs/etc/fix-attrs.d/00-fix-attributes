@@ -1,1 +1,6 @@
+echo "Fix attributes"
+/etc/cont-init.d true root 755 755
+/etc/cont-finish.d true root 755 755
+/etc/service.d true root 755 755
 /etc/s6/init true root 755 755
+echo "Fix attributes: complete"

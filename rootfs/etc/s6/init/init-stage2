@@ -1,8 +1,8 @@
 #!/usr/bin/with-contenv bash
 
 # Directories
-SCRIPTS_DIR="/config/custom-cont.init.d"
-SERVICES_DIR="/config/custom-services.d"
+SCRIPTS_DIR="/etc/cont.init.d"
+#SERVICES_DIR="/config/custom-services.d"
 
 # Remove all existing custom services before continuing to ensure
 # we aren't running anything the user may have removed
@@ -29,21 +29,21 @@ if ([ -e "${SCRIPTS_DIR}" ] && \
         fi
       done
     fi
-    if [ -n "$(/bin/ls -A ${SERVICES_DIR} 2>/dev/null)" ]; then
-      echo "[custom-init] service files found in ${SERVICES_DIR}"
-      for SERVICE in ${SERVICES_DIR}/*; do
-        NAME="$(basename "${SERVICE}")"
-        if [ -f "${SERVICE}" ]; then
-          echo "[custom-init] ${NAME}: service detected, copying..."
-          mkdir -p /etc/services.d/custom-service-${NAME}/
-          cp ${SERVICE} /etc/services.d/custom-service-${NAME}/run
-          chmod +x /etc/services.d/custom-service-${NAME}/run
-          echo "[custom-init] ${NAME}: copied"
-        elif [ ! -f "${SERVICE}" ]; then
-          echo "[custom-init] ${NAME}: is not a file"
-        fi
-      done
-    fi
+    #if [ -n "$(/bin/ls -A ${SERVICES_DIR} 2>/dev/null)" ]; then
+    #  echo "[custom-init] service files found in ${SERVICES_DIR}"
+    #  for SERVICE in ${SERVICES_DIR}/*; do
+    #    NAME="$(basename "${SERVICE}")"
+    #    if [ -f "${SERVICE}" ]; then
+    #      echo "[custom-init] ${NAME}: service detected, copying..."
+    #      mkdir -p /etc/services.d/custom-service-${NAME}/
+    #      cp ${SERVICE} /etc/services.d/custom-service-${NAME}/run
+    #      chmod +x /etc/services.d/custom-service-${NAME}/run
+    #      echo "[custom-init] ${NAME}: copied"
+    #    elif [ ! -f "${SERVICE}" ]; then
+    #      echo "[custom-init] ${NAME}: is not a file"
+    #    fi
+    #  done
+    #fi
 else
   echo "[custom-init] no custom files found exiting..."
 fi

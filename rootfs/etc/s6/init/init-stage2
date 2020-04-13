@@ -1,7 +1,11 @@
 #!/usr/bin/with-contenv bash
 
+STAGE="[init-stage2]"
+
+echo "${STAGE} processing init-stage2..."
+
 # Directories
-SCRIPTS_DIR="/etc/cont.init.d"
+SCRIPTS_DIR="/etc/cont-init.d"
 SERVICES_DIR="/etc/services.d"
 
 # Remove all existing custom services before continuing to ensure
@@ -12,39 +16,44 @@ SERVICES_DIR="/etc/services.d"
 #fi
 
 # Make sure custom init directory exists and has files in it
-if ([ -e "${SCRIPTS_DIR}" ] && \
-   [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]) || \
-   ([ -e "${SERVICES_DIR}" ] && \
-   [ -n "$(/bin/ls -A ${SERVICES_DIR} 2>/dev/null)" ]); then
-    if [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]; then
-      echo "[custom-init] files found in ${SCRIPTS_DIR} executing"
-      for SCRIPT in ${SCRIPTS_DIR}/*; do
-        NAME="$(basename "${SCRIPT}")"
-        if [ -f "${SCRIPT}" ]; then
-          echo "[custom-init] ${NAME}: executing..."
-          /bin/bash ${SCRIPT}
-          echo "[custom-init] ${NAME}: exited $?"
-        elif [ ! -f "${SCRIPT}" ]; then
-          echo "[custom-init] ${NAME}: is not a file"
-        fi
-      done
-    fi
-    if [ -n "$(/bin/ls -A ${SERVICES_DIR} 2>/dev/null)" ]; then
-      echo "[custom-init] service files found in ${SERVICES_DIR}"
-      for SERVICE in ${SERVICES_DIR}/*; do
-        NAME="$(basename "${SERVICE}")"
-        if [ -f "${SERVICE}" ]; then
-          echo "[custom-init] ${NAME}: service detected, copying..."
-          mkdir -p /etc/services.d/custom-service-${NAME}/ /var/run/s6/services/custom-service-${NAME}/{event, supervise}
-          mv ${SERVICE} /etc/services.d/custom-service-${NAME}/run
-        chmod +x /etc/services.d/custom-service-${NAME}/run
-          echo "[custom-init] ${NAME}: copied"
-          ln -s /etc/services.d/custom-service-${NAME}/run /var/run/s6/services/custom-service-${NAME}/run
-        elif [ ! -f "${SERVICE}" ]; then
-          echo "[custom-init] ${NAME}: is not a file"
-        fi
-      done
-    fi
+if ([ -e "${SCRIPTS_DIR}" ] && [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]) || ([ -e "${SERVICES_DIR}" ] && [ -n "$(/bin/ls -A ${SERVICES_DIR} 2>/dev/null)" ]); then
+  if [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]; then
+    echo "${STAGE} files found in ${SCRIPTS_DIR} executing..."
+
+    for SCRIPT in ${SCRIPTS_DIR}/*; do
+      NAME="$(basename "${SCRIPT}")"
+
+      if [ -f "${SCRIPT}" ]; then
+        echo "${STAGE} ${NAME}: executing..."
+        /bin/bash ${SCRIPT}
+        echo "${STAGE} ${NAME}: exited $?"
+      elif [ ! -f "${SCRIPT}" ]; then
+        echo "${STAGE} ${NAME}: is not a file"
+      fi
+    done
+  fi
+  if [ -n "$(/bin/ls -A ${SERVICES_DIR} 2>/dev/null)" ]; then
+    echo "${STAGE}  service files found in ${SERVICES_DIR}"
+
+    for SERVICE in ${SERVICES_DIR}/*; do
+      NAME="$(basename "${SERVICE}")"
+
+      if [ -f "${SERVICE}" ]; then
+        echo "${STAGE} ${NAME}: service detected, copying..."
+        mkdir -p /etc/services.d/custom-service-${NAME}/ /var/run/s6/services/custom-service-${NAME}/{event, supervise}
+        chmod 03730 /var/run/s6/services/custom-service-${NAME}/event
+        chmod 700 /var/run/s6/services/custom-service-${NAME}/supervise
+        mv ${SERVICE} /etc/services.d/custom-service-${NAME}/run
+        chmod 755 /etc/services.d/custom-service-${NAME}/run
+        ln -s /etc/services.d/custom-service-${NAME}/run /var/run/s6/services/custom-service-${NAME}/run
+        echo "${STAGE} ${NAME}: copied & sym-linked"
+      elif [ ! -f "${SERVICE}" ]; then
+        echo "${STAGE} ${NAME}: is not a file"
+      fi
+    done
+
+    s6-svscanctl -a /var/run/s6/services
+  fi
 else
-  echo "[custom-init] no custom files found exiting..."
+  echo "${STAGE} no custom files found exiting..."
 fi

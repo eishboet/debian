@@ -19,4 +19,6 @@ RUN apt-get update \
 
 COPY rootfs/ /
 
+RUN chmod 755 /etc/s6/init/*
+
 ENTRYPOINT ["/init"]

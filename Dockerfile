@@ -11,7 +11,7 @@ RUN apt-get update \
   && groupmod -g 1000 users \
   && useradd -u 911 -U -d /config -s /bin/false abc \
   && usermod -G users abc \
-  && mkdir -p   /config/custom-cont-init.d \
+  && mkdir -p   /config/{custom-cont-init.d,custom-service.d} \
                 /data \
                 /default \
   && apt-get clean \
@@ -19,6 +19,6 @@ RUN apt-get update \
 
 COPY rootfs/ /
 
-RUN chmod 755 /etc/s6/init/*
+RUN chmod 755 /etc/s6/init/init-stage2
 
 ENTRYPOINT ["/init"]

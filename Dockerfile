@@ -13,7 +13,7 @@ RUN apt-get update \
   && usermod -G users abc \
   && mkdir -p   /config/{custom-cont-init.d,custom-service.d} \
                 /data \
-                /default \
+                /defaults \
   && apt-get clean \
   && rm -rf /tmp/*
 

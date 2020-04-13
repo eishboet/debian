@@ -18,7 +18,7 @@ SERVICES_DIR="/etc/services.d"
 # Make sure custom init directory exists and has files in it
 if ([ -e "${SCRIPTS_DIR}" ] && [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]) || ([ -e "${SERVICES_DIR}" ] && [ -n "$(/bin/ls -A ${SERVICES_DIR} 2>/dev/null)" ]); then
   if [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]; then
-    echo "${STAGE} files found in ${SCRIPTS_DIR} executing..."
+    echo "${STAGE} script files found in ${SCRIPTS_DIR} executing..."
 
     for SCRIPT in ${SCRIPTS_DIR}/*; do
       NAME="$(basename "${SCRIPT}")"
@@ -41,12 +41,16 @@ if ([ -e "${SCRIPTS_DIR}" ] && [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]
       if [ -f "${SERVICE}" ]; then
         echo "${STAGE} ${NAME}: service detected, copying..."
         mkdir -p /etc/services.d/custom-service-${NAME}/ /var/run/s6/services/custom-service-${NAME}/{event, supervise}
+        echo "${STAGE} ${NAME}: directories created"
         chmod 03730 /var/run/s6/services/custom-service-${NAME}/event
         chmod 700 /var/run/s6/services/custom-service-${NAME}/supervise
+        echo "${STAGE} ${NAME}: directory permissions set"
         mv ${SERVICE} /etc/services.d/custom-service-${NAME}/run
+        echo "${STAGE} ${NAME}: service moved to repository"
         chmod 755 /etc/services.d/custom-service-${NAME}/run
+        echo "${STAGE} ${NAME}: service permissions set"
         ln -s /etc/services.d/custom-service-${NAME}/run /var/run/s6/services/custom-service-${NAME}/run
-        echo "${STAGE} ${NAME}: copied & sym-linked"
+        echo "${STAGE} ${NAME}: service linked"
       elif [ ! -f "${SERVICE}" ]; then
         echo "${STAGE} ${NAME}: is not a file"
       fi

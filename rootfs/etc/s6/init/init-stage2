@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 
 # Directories
-SCRIPTS_DIR="/etc/cont.init.d"
+SCRIPTS_DIR="/config/custom-cont.init.d"
 SERVICES_DIR="/config/custom-services.d"
 
 # Remove all existing custom services before continuing to ensure

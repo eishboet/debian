@@ -6,14 +6,14 @@ echo "${STAGE} processing init-stage2..."
 
 # Directories
 SCRIPTS_DIR="/etc/cont-init.d"
-SERVICES_DIR="/etc/services.d"
+SERVICES_DIR="/config/repository.services.d"
 
 # Remove all existing custom services before continuing to ensure
 # we aren't running anything the user may have removed
-#if [ -n "$(/bin/ls -A /etc/services.d/custom-service-* 2>/dev/null)" ]; then
-#  echo "[custom-init] removing existing custom services..."
-#  rm -rf /etc/services.d/custom-service-*
-#fi
+if [ -n "$(/bin/ls -A /etc/services.d/custom-service-* 2>/dev/null)" ]; then
+  echo "[custom-init] removing existing custom services..."
+  rm -rf /etc/services.d/custom-service-*
+fi
 
 # Make sure custom init directory exists and has files in it
 if ([ -e "${SCRIPTS_DIR}" ] && [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]) || ([ -e "${SERVICES_DIR}" ] && [ -n "$(/bin/ls -A ${SERVICES_DIR} 2>/dev/null)" ]); then
@@ -40,13 +40,14 @@ if ([ -e "${SCRIPTS_DIR}" ] && [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]
 
       if [ -f "${SERVICE}" ]; then
         echo "${STAGE} ${NAME}: service detected, copying..."
-        mkdir -p /etc/services.d/custom-service-${NAME}/ /var/run/s6/services/custom-service-${NAME}/{event, supervise}
+        mkdir -p /etc/services.d/custom-service-${NAME} /var/run/s6/services/custom-service-${NAME}/{event,supervise}
         echo "${STAGE} ${NAME}: directories created"
         chmod 03730 /var/run/s6/services/custom-service-${NAME}/event
         chmod 700 /var/run/s6/services/custom-service-${NAME}/supervise
         echo "${STAGE} ${NAME}: directory permissions set"
-        mv ${SERVICE} /etc/services.d/custom-service-${NAME}/run
-        echo "${STAGE} ${NAME}: service moved to repository"
+        cp ${SERVICE} /etc/services.d/custom-service.d-${NAME}/
+        mv /etc/services.d/custom-services.d-${NAME}/${NAME} /etc/services.d/custom-service-${NAME}/run
+        echo "${STAGE} ${NAME}: service moved to service.d"
         chmod 755 /etc/services.d/custom-service-${NAME}/run
         echo "${STAGE} ${NAME}: service permissions set"
         ln -s /etc/services.d/custom-service-${NAME}/run /var/run/s6/services/custom-service-${NAME}/run
@@ -57,7 +58,18 @@ if ([ -e "${SCRIPTS_DIR}" ] && [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]
     done
 
     s6-svscanctl -a /var/run/s6/services
+    if [ $? ]; then
+      echo "${STAGE} services started"
+    else
+      echo "${STAGE} services failed"
+    fi
   fi
 else
   echo "${STAGE} no custom files found exiting..."
+  s6-svscanctl -a /var/run/s6/services
+  if [ $? ]; then
+    echo "${STAGE} services started"
+  else
+    echo "${STAGE} services failed"
+  fi
 fi

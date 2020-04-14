@@ -6,7 +6,7 @@ echo "${STAGE} processing init-stage2..."
 
 # Directories
 SCRIPTS_DIR="/etc/cont-init.d"
-SERVICES_DIR="/config/repository.services.d"
+SERVICES_DIR="/etc/repository.services.d"
 
 # Remove all existing custom services before continuing to ensure
 # we aren't running anything the user may have removed
@@ -45,8 +45,8 @@ if ([ -e "${SCRIPTS_DIR}" ] && [ -n "$(/bin/ls -A ${SCRIPTS_DIR} 2>/dev/null)" ]
         chmod 03730 /var/run/s6/services/custom-service-${NAME}/event
         chmod 700 /var/run/s6/services/custom-service-${NAME}/supervise
         echo "${STAGE} ${NAME}: directory permissions set"
-        cp ${SERVICE} /etc/services.d/custom-service.d-${NAME}/
-        mv /etc/services.d/custom-services.d-${NAME}/${NAME} /etc/services.d/custom-service-${NAME}/run
+        cp ${SERVICE} /etc/services.d/custom-service-${NAME}/run
+        #mv /etc/services.d/custom-services.d-${NAME}/${NAME} /etc/services.d/custom-service-${NAME}/run
         echo "${STAGE} ${NAME}: service moved to service.d"
         chmod 755 /etc/services.d/custom-service-${NAME}/run
         echo "${STAGE} ${NAME}: service permissions set"

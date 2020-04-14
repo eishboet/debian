@@ -11,7 +11,7 @@ RUN apt-get update \
   && groupmod -g 1000 users \
   && useradd -u 911 -U -d /config -s /bin/false abc \
   && usermod -G users abc \
-  && mkdir -p   /config/{custom-cont-init.d,custom-service.d} \
+  && mkdir -p   /config \
                 /data \
                 /defaults \
   && apt-get clean \

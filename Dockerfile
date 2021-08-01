@@ -9,9 +9,7 @@ ADD https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.1/s6-
 
 RUN chmod +x /tmp/s6-overlay-amd64-installer && /tmp/s6-overlay-amd64-installer /
 RUN apt-get update && apt-get upgrade \
-  && mkdir -p   /config \
-                /data \
-  && chown nobody:nogroup /config /data \
+  && mkdir -p   /config /data \
   && apt-get clean \
   && rm -rf /tmp/*
 
